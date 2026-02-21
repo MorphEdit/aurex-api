@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,12 +9,6 @@ RUN apt-get update && apt-get install -y \
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql zip
-
-# Enable Apache mod_rewrite (required for .htaccess routing)
-RUN a2enmod rewrite
-
-# Copy custom Apache config (DocumentRoot → /public)
-COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -36,4 +30,4 @@ RUN mkdir -p logs storage/rate_limits \
     && chown -R www-data:www-data logs storage \
     && chmod -R 775 logs storage
 
-EXPOSE 80
+EXPOSE 9000

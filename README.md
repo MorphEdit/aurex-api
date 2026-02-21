@@ -262,15 +262,15 @@ $router->group('/api/v1/something', [new MyMiddleware()], function ($router) {
 
 ## Benchmark
 
-Measured inside Docker container — PHP 8.1.34, MySQL 8.0, Apache.
-Run with `docker exec aurex_app php benchmark/benchmark.php http://localhost`
+Measured inside Docker container — PHP 8.1.34, MySQL 8.0, Nginx + PHP-FPM.
+Run with `docker exec aurex_app php benchmark/benchmark.php http://nginx`
 
 | Endpoint | min | avg | p95 | req/s |
 |---|---|---|---|---|
-| `POST /auth/login` | 63ms | 73ms | 107ms | 12 |
-| `GET /auth/me` | 21ms | 29ms | 41ms | 33 |
-| `GET /employees` (paginated) | 21ms | 27ms | 30ms | 36 |
-| `GET /employees?search=` (filtered) | 21ms | 22ms | 25ms | 44 |
+| `POST /auth/login` | 58ms | 77ms | 95ms | 13 |
+| `GET /auth/me` | 19ms | 29ms | 45ms | 34 |
+| `GET /employees` (paginated) | 21ms | 31ms | 45ms | 32 |
+| `GET /employees?search=` (filtered) | 21ms | 29ms | 42ms | 34 |
 
 **Peak memory per benchmark run: 2 MB**
 
