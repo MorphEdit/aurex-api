@@ -267,15 +267,29 @@ Run with `docker exec aurex_app php benchmark/benchmark.php http://localhost`
 
 | Endpoint | min | avg | p95 | req/s |
 |---|---|---|---|---|
-| `POST /auth/login` | 61ms | 73ms | 92ms | 14 |
-| `GET /auth/me` | 21ms | 29ms | 33ms | 34 |
-| `GET /employees` (paginated) | 21ms | 26ms | 31ms | 39 |
-| `GET /employees?search=` (filtered) | 21ms | 25ms | 27ms | 40 |
+| `POST /auth/login` | 63ms | 73ms | 107ms | 12 |
+| `GET /auth/me` | 21ms | 29ms | 41ms | 33 |
+| `GET /employees` (paginated) | 21ms | 27ms | 30ms | 36 |
+| `GET /employees?search=` (filtered) | 21ms | 22ms | 25ms | 44 |
 
 **Peak memory per benchmark run: 2 MB**
 
 > Login is slower by design — bcrypt verification takes ~60ms as a security feature.
 > Authenticated endpoints average **25ms** including JWT decode, middleware pipeline, and DB query.
+
+### Production Performance
+
+For production Linux deployments, enable OPcache to reduce PHP compilation overhead per request.
+A pre-configured `opcache.ini` is included at `.docker/opcache.ini`.
+
+Enable it in your `Dockerfile`:
+
+```dockerfile
+RUN docker-php-ext-install opcache
+COPY .docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+```
+
+Set `opcache.validate_timestamps=0` in production (files don't change between deploys).
 
 ---
 
