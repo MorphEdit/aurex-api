@@ -1,0 +1,22 @@
+# Dependencies
+/vendor/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+/logs/*.log
+
+# Rate limit store
+/storage/rate_limits/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

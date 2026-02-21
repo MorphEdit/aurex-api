@@ -1,0 +1,13 @@
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# Block access to hidden files
+RewriteRule ^\.(.+) - [F,L]
+
+# Pass Authorization header through to PHP (Apache strips it by default)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect all non-file, non-directory requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

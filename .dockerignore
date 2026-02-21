@@ -1,0 +1,24 @@
+# Dependencies (installed inside container)
+vendor/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs and temp storage
+logs/
+storage/rate_limits/
+
+# Git
+.git/
+.gitignore
+
+# Docker files (not needed inside container)
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Dev tools
+benchmark/
+README.md

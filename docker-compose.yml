@@ -1,0 +1,73 @@
+services:
+
+  # ── PHP + Apache ──────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aurex_app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Mount source for live reload during development
+      - .:/var/www/html
+      # Persist logs outside container
+      - ./logs:/var/www/html/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+    networks:
+      - aurex_net
+
+  # ── MySQL 8 ───────────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: aurex_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-aurex}
+      MYSQL_USER: ${DB_USERNAME:-aurex}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: root_secret
+    ports:
+      - "3307:3306"
+    volumes:
+      # Persist database data
+      - db_data:/var/lib/mysql
+      # Auto-run migrations on first boot (alphabetical order)
+      - ./database/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aurex_net
+
+  # ── phpMyAdmin (optional, remove in production) ───────────────────────────
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: aurex_pma
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - aurex_net
+
+volumes:
+  db_data:
+
+networks:
+  aurex_net:
+    driver: bridge
